@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/abdallahelassal/Store/config"
-	"github.com/abdallahelassal/Store/models"
+	"github.com/abdallahelassal/Store/internal/modules/user/domain"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 ) 
