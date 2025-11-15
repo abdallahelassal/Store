@@ -61,3 +61,10 @@ func (r *userRepository) Count(ctx context.Context)(int64,error){
 	err := r.db.WithContext(ctx).Model(&domain.User{}).Count(&count).Error
 	return count,err
 }
+func (r *userRepository) GetByUUID(ctx context.Context, uuid string) (*domain.User, error) {
+    var user domain.User
+    if err := r.db.WithContext(ctx).Where("uuid = ?", uuid).First(&user).Error; err != nil {
+        return nil, err
+    }
+    return &user, nil
+}

@@ -11,7 +11,7 @@ type AuthResponse struct{
 	RefreshToken	string		`json:"refresh_token"`
 	TokenType		string		`json:"token_type"`
 	ExpiresIn		int			`json:"expires_in"`
-	User 			UserResponse `json:"user"`
+	User 			*UserResponse `json:"user"`
 }
 
 type LoginResponse struct{
@@ -19,5 +19,5 @@ type LoginResponse struct{
 	RefreshToken	string		`json:"refresh_token"`
 	TokenType		string		`json:"token_type"`
 	ExpiresIn		int			`json:"expires_in"`
-	User 			UserResponse `json:"user"`
+	User 			*UserResponse `json:"user"`
 }
