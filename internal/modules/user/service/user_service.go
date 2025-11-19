@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"log"
-
+	
 	"github.com/abdallahelassal/Store/internal/modules/user/domain"
 	"github.com/abdallahelassal/Store/internal/modules/user/dtos/request"
 	"github.com/abdallahelassal/Store/internal/modules/user/dtos/response"
@@ -87,8 +87,8 @@ func (c *userService) GetProfile(ctx context.Context,userID uint)(*response.User
 	},nil 
 }
 
-func (c *userService) UpdateProfile(ctx context.Context, userID uint , req request.UpdateProfileRequest)(*response.UserResponse, error){
-	user , err := c.repo.GetByID(ctx, userID)
+func (c *userService) UpdateProfile(ctx context.Context, uuid string , req request.UpdateProfileRequest)(*response.UserResponse, error){
+	user , err := c.repo.GetByUUID(ctx, uuid)
 	if err != nil {
 		return nil , err 
 	}
@@ -99,7 +99,7 @@ func (c *userService) UpdateProfile(ctx context.Context, userID uint , req reque
 
 	if req.Email != ""{
 		exiting , _ := c.repo.GetByEmail(ctx,req.Email)
-		if exiting != nil && exiting.ID != user.ID {
+		if exiting != nil && exiting.UUID != user.UUID {
 			return nil , domain.ErrEmailAlreadyExits
 		}
 		user.Email = req.Email
@@ -116,8 +116,6 @@ func (s *userService) RefreshToken(ctx context.Context,refreshToken string)(*res
 	if err != nil {
 		return nil , domain.ErrInvalidToken
 	}
-
-
 
 	user , err := s.repo.GetByUUID(ctx, claims.UserID)
 	if  err != nil {
@@ -149,8 +147,16 @@ func (s *userService) GetByID(ctx context.Context, userID uint)(*response.UserRe
 	return s.toUserResponse(user),nil
 }
 
-func (s *userService) DeleteUser(ctx context.Context , userID uint)error{
-	return s.repo.Delete(ctx,userID)
+func (s *userService) GetByUUID(ctx context.Context,uuid string)(*response.UserResponse, error){
+	user , err := s.repo.GetByUUID(ctx,uuid)
+		if err != nil {
+		return nil, err 
+	}
+	return s.toUserResponse(user),nil
+}
+
+func (s *userService) DeleteUser(ctx context.Context , uuid string)error{
+	return s.repo.Delete(ctx,uuid)
 }
 
 func (s *userService) generateAuthResponse(user *domain.User)(*response.AuthResponse,error){

@@ -5,6 +5,7 @@ import (
 
 	"github.com/abdallahelassal/Store/config"
 	"github.com/abdallahelassal/Store/internal/modules/user/domain"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 ) 
@@ -39,5 +40,5 @@ func (c Connection) Connection(){
 		panic("Failed to connect to database!")
 	}
 	c.DB = db
-	c.DB.AutoMigrate(&models.User{})
+	c.DB.AutoMigrate(&domain.User{})
 }

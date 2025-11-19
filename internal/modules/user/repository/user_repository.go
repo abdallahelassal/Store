@@ -43,8 +43,8 @@ func (r *userRepository) GetByEmail(ctx context.Context,email string)(*domain.Us
 func (r *userRepository) Update(ctx context.Context,user *domain.User)error{
 	return r.db.WithContext(ctx).Save(user).Error
 }
-func (r *userRepository) Delete(ctx context.Context,id uint)error{
-	return r.db.WithContext(ctx).Delete(&domain.User{}, id).Error
+func (r *userRepository) Delete(ctx context.Context,uuid string)error{
+	return r.db.WithContext(ctx).Delete(&domain.User{}, uuid).Error
 }
 func (r *userRepository) List(ctx context.Context, limit,offset int)([]*domain.User,error){
 	var users []*domain.User
