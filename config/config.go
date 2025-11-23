@@ -3,40 +3,84 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
+
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	DB_NAME		string
-	DB_PASSWORD	string
-	DB_USER		string
-	DB_PORT		string
-	DB_HOST		string
-	SECRET_KEY	string
-	PORT 		string
+	DatabaseConfig DatabaseConfig
+	ServerConfig   ServerConfig
+	JWTConfig      JWTConfig
+	Environment    string
 }
 
-var AppConfig Config
+type ServerConfig struct {
+	PORT string
+	HOST string
+}
+type DatabaseConfig struct {
+	Name     string
+	User     string
+	Password string
+	Port     string
+	Host     string
+	SSLMode  string
+}
+type JWTConfig struct {
+	Secret            string
+	AccessExpiration  int
+	RefreshExpiration int
+}
 
-func LoadConfig(fileName string){
-	err := godotenv.Load(fileName)
-	if err != nil {
-		log.Printf("error log .env file %v", err)
-		return
+func LoadConfig() *Config {
+	// Try loading .env from current dir and a few parent dirs so running
+	// from subfolders (for example `cmd/api`) still picks up the project's .env
+	var loadedFrom string
+	candidates := []string{".env", "../.env", "../../.env", "../../../.env"}
+	for _, p := range candidates {
+		if err := godotenv.Load(p); err == nil {
+			loadedFrom = p
+			break
+		}
 	}
-	port := os.Getenv("PORT")
-	if port == ""{
-		port = "8000"
-		return
+	if loadedFrom != "" {
+		log.Println("loaded .env from", loadedFrom)
+	} else {
+		log.Println("no .env file found (looked in .env and parent directories)")
 	}
 
-	AppConfig = Config{
-		DB_NAME: os.Getenv("DB_NAME"),
-		DB_PASSWORD: os.Getenv("DB_PASSWORD"),
-		DB_USER: os.Getenv("DB_USER"),
-		DB_PORT: os.Getenv("DB_PORT"),
-		DB_HOST: os.Getenv("DB_HOST"),
-		SECRET_KEY: os.Getenv("SECRET_KEY"),
-		PORT: port,
+	return &Config{
+		ServerConfig: ServerConfig{
+			PORT: getEnv("PORT", "8000"),
+			HOST: getEnv("HOST", "0.0.0.0"),
+		},
+		DatabaseConfig: DatabaseConfig{
+			Name:     getEnv("DB_NAME", "store"),
+			Password: getEnv("DB_PASSWORD", ""),
+			Port:     getEnv("DB_PORT", "5432"),
+			Host:     getEnv("DB_HOST", "localhost"),
+			User:     getEnv("DB_USER", "postgres"),
+			SSLMode:  getEnv("DB_SSL_MODE", "disable"),
+		},
+		JWTConfig: JWTConfig{
+			Secret:            getEnv("SECRET_KEY", ""),
+			AccessExpiration:  getEnvAsInt("JWT_ACCESS_EXPIRATION", 60),
+			RefreshExpiration: getEnvAsInt("JWT_REFRESH_EXPIRATION", 7),
+		},
+		Environment: getEnv("ENVIRONMENT", "development"),
 	}
+}
+func getEnv(key string, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}
+func getEnvAsInt(key string, defaultValue int) int {
+	valueSTR := getEnv(key, "")
+	if value, err := strconv.Atoi(valueSTR); err == nil {
+		return value
+	}
+	return defaultValue
 }

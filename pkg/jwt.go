@@ -23,9 +23,9 @@ type JWTService struct{
 	refreshExpiry 	time.Duration
 }
 
-func NewJWTService(sec config.Config, expMinutes, refreshDay int) *JWTService{
+func NewJWTService(sec config.JWTConfig, expMinutes int, refreshDay int) *JWTService{
 	return &JWTService{
-		secretKey: sec.SECRET_KEY,
+		secretKey: sec.Secret,
 		exprictionTime: time.Duration(expMinutes) * time.Minute,
 		refreshExpiry: time.Duration(refreshDay)  * 24 * time.Hour,
 	}
