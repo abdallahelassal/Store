@@ -16,4 +16,5 @@ type UserRepository interface{
 	List(ctx context.Context, limit, offset int) ([]*domain.User, error)
 	Count(ctx context.Context) (int64, error)
 	GetByUUID(ctx context.Context, uuid string) (*domain.User, error) 
+	UpdateUserBranch(ctx context.Context, userUUID,newBranchUUID string) error
 }

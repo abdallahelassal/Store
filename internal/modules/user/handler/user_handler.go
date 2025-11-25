@@ -155,3 +155,15 @@ func (h *UserHandler) DeleteUser(c *gin.Context){
 	}
 	utils.SuccessResponse(c,http.StatusOK,"user deleted successfully",nil)
 }
+func (h *UserHandler) MoveUser(c *gin.Context){
+	var req request.UpdateUserBranchRequest	
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.ErrorResponse(c,http.StatusBadRequest,"invalid request", err.Error())
+		return
+	}
+	if err := h.service.UpdateUserBranch(c.Request.Context(), req.UserUUID, req.NewBranchUUID); err != nil {
+		utils.ErrorResponse(c,http.StatusInternalServerError,"failed to update user branch", err.Error())
+		return
+	}
+	utils.SuccessResponse(c,http.StatusOK,"user branch updated successfully",nil)
+}

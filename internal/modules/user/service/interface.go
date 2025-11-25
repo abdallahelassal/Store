@@ -17,4 +17,5 @@ type UserService interface {
 	GetByID(ctx context.Context,id uint)(*response.UserResponse, error)
 	GetByUUID(ctx context.Context,uuid string)(*response.UserResponse,error)
 	DeleteUser(ctx context.Context,uuid string)error
+	UpdateUserBranch(ctx context.Context, userUUID, newBranchUUID string) error
 }

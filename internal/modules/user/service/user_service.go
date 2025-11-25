@@ -183,3 +183,15 @@ func (s *userService) toUserResponse(user *domain.User)*response.UserResponse{
 		Role: string(user.Role),
 	}
 }
+func (s *userService) UpdateUserBranch(ctx context.Context, userUUID, newBranchUUID string) error {
+	_, err := s.repo.GetByUUID(ctx, userUUID)
+	if err != nil {
+		return err
+	}
+	_ , err = s.repo.GetByUUID(ctx, newBranchUUID)
+	if err != nil {
+		return err
+	}
+
+	return s.repo.UpdateUserBranch(ctx, userUUID, newBranchUUID)
+}

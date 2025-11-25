@@ -22,3 +22,7 @@ type UpdateProfileRequest struct{
 type RefreshTokenRequest struct{
 	RefreshToken string 	`json:"refresh_token" binding:"required"`
 }
+type UpdateUserBranchRequest struct{
+	UserUUID		string		`json:"user_uuid" binding:"required,uuid4"`
+	NewBranchUUID	string		`json:"new_branch_uuid" binding:"required,uuid4"`
+}

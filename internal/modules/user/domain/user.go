@@ -12,6 +12,7 @@ type User struct{
 	Email		string		`json:"email" validate:"required,email"`
 	Password	string		`json:"password" validate:"required,password"`
 	Role		Role		`json:"role" gorm:"default:user" validate:"required"`
+	BranchUUID  uuid.UUID
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB){

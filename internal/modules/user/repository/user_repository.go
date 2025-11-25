@@ -68,3 +68,10 @@ func (r *userRepository) GetByUUID(ctx context.Context, uuid string) (*domain.Us
     }
     return &user, nil
 }
+
+func (r *userRepository) UpdateUserBranch(ctx context.Context, userUUID, newBranchUUID string) error {
+	return r.db.WithContext(ctx).
+		Model(&domain.User{}).
+		Where("uuid = ?", userUUID).
+		Update("branch_uuid", newBranchUUID).Error
+}
