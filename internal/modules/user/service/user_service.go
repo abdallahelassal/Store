@@ -40,7 +40,7 @@ func (s *userService) Register(ctx context.Context,req request.RegisterRequest)(
 		User_name: req.Name,
 		Email: req.Email,
 		Password: hashedPassword,
-		Role: domain.RoleUser,
+		Role: domain.Role(req.Role),
 	}
 	if err := s.repo.Create(ctx,user); err != nil {
 		log.Printf("error create user %v",err)

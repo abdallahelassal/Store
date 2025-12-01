@@ -7,6 +7,7 @@ import (
 	"github.com/abdallahelassal/Store/internal/container"
 	"github.com/abdallahelassal/Store/internal/middleware"
 	userRoutes "github.com/abdallahelassal/Store/internal/modules/user/routes"
+	branchRoutes "github.com/abdallahelassal/Store/internal/modules/branch/routes"
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,5 +30,6 @@ func SetupRouter(cont *container.Container, cfg *config.Config) *gin.Engine {
 	// Register module routes. Passing a root group so routes like
 	// `/auth/register` are available at the top-level.
 	userRoutes.RegisterRoutes(r.Group("/"), cont.UserHandler, cont.AuthMiddleware)
+	branchRoutes.RegisterRoutes(r.Group("/"), cont.BranchHandler, cont.AuthMiddleware)
 	return r
 }

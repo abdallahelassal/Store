@@ -3,10 +3,12 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/abdallahelassal/Store/internal/middleware"
 	"github.com/abdallahelassal/Store/internal/modules/user/dtos/request"
 	"github.com/abdallahelassal/Store/internal/modules/user/service"
+	"github.com/abdallahelassal/Store/pkg"
 	"github.com/abdallahelassal/Store/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -31,6 +33,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 		utils.ErrorResponse(c, http.StatusBadRequest, "failed register", err.Error())
 		return
 	}
+
 	utils.SuccessResponse(c, http.StatusCreated, "user registered successfully", result)
 }
 
@@ -47,6 +50,8 @@ func (h *UserHandler) Login(c *gin.Context) {
 		utils.ErrorResponse(c, http.StatusUnauthorized, "login failed", err.Error())
 		return
 	}
+
+	pkg.SetCookie(c,"access_token",result.AccessToken,time.Hour)
 	utils.SuccessResponse(c, http.StatusOK, "login successfull", result)
 }
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/abdallahelassal/Store/config"
 	"github.com/abdallahelassal/Store/internal/modules/user/domain"
+	BranchDomain "github.com/abdallahelassal/Store/internal/modules/branch/domain"
 	"go.uber.org/zap"
 
 	"gorm.io/driver/postgres"
@@ -49,7 +50,7 @@ func (c *Connection) Connection(){
 		panic("Failed to connect to database!")
 	}
 	c.DB = db
-	if err := c.DB.AutoMigrate(&domain.User{}); err != nil {
+	if err := c.DB.AutoMigrate(&BranchDomain.Branch{} ,&domain.User{}); err != nil {
 		c.Log.Info("migration err:")
 		return
 	}

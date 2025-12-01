@@ -22,7 +22,7 @@ func main() {
 
 	db  := database.NewConnection(cfg, appLogger)
 
-	jwtService := pkg.NewJWTService(cfg.JWTConfig,cfg.JWTConfig.AccessExpiration,cfg.JWTConfig.RefreshExpiration)
+	 jwtService := pkg.NewJWTService(cfg.JWTConfig,cfg.JWTConfig.AccessExpiration,cfg.JWTConfig.RefreshExpiration)
 
 	cont := container.NewContainer(db.DB,jwtService,appLogger)
 

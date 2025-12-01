@@ -24,40 +24,91 @@ func NewAuthMiddleware(jwtService *pkg.JWTService)*AuthMiddleware{
 	return &AuthMiddleware{service: jwtService}
 }
 
-func (m *AuthMiddleware) RequireAuth()gin.HandlerFunc{
+// func (m *AuthMiddleware) RequireAuth()gin.HandlerFunc{
+// 	return func(c *gin.Context) {
+
+			
+
+// 		authHeader := c.GetHeader("Authorization")
+// 		if authHeader == "" {
+// 			utils.ErrorResponse(c, http.StatusUnauthorized,"authorization header required","")
+// 			c.Abort()
+// 			return 
+// 		}
+
+// 		parts := strings.Fields(authHeader)
+// 		if len(parts) != 2 || parts[0] != "Bearer"{
+// 			utils.ErrorResponse(c,http.StatusUnauthorized,"invalid authorization format", "")
+// 			c.Abort()
+// 			return
+// 		}
+
+// 		tokenString := parts[1]
+// 		claims , err := m.service.ValidateToken(tokenString)
+// 		if err != nil {
+// 			utils.ErrorResponse(c, http.StatusUnauthorized,"invalid or expired token",err.Error())
+// 			c.Abort()
+// 			return 
+// 		}
+// 		authUser := AuthenticatedUser{
+// 			UUID: claims.UserID,
+// 			Email: claims.Email,
+// 			Role: claims.Role,
+// 		}
+
+// 		c.Set("auth_user",authUser)
+
+// 		c.Next()
+// 	}
+// }
+
+
+
+func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var tokenString string
+
+		// جرب الأول Authorization header
 		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			utils.ErrorResponse(c, http.StatusUnauthorized,"authorization header required","")
-			c.Abort()
-			return 
+		if authHeader != "" {
+			parts := strings.Fields(authHeader)
+			if len(parts) != 2 || parts[0] != "Bearer" {
+				utils.ErrorResponse(c, http.StatusUnauthorized, "invalid authorization format", "")
+				c.Abort()
+				return
+			}
+			tokenString = parts[1]
+		} else {
+			// لو header مش موجود، جرب الكوكي
+			cookie, err := c.Cookie("access_token")
+			if err != nil {
+				utils.ErrorResponse(c, http.StatusUnauthorized, "authorization cookie required", "")
+				c.Abort()
+				return
+			}
+			tokenString = cookie
 		}
 
-		parts := strings.Fields(authHeader)
-		if len(parts) != 2 || parts[0] != "Bearer"{
-			utils.ErrorResponse(c,http.StatusUnauthorized,"invalid authorization format", "")
+		// تحقق من التوكن
+		claims, err := m.service.ValidateToken(tokenString)
+		if err != nil {
+			utils.ErrorResponse(c, http.StatusUnauthorized, "invalid or expired token", err.Error())
 			c.Abort()
 			return
 		}
 
-		tokenString := parts[1]
-		claims , err := m.service.ValidateToken(tokenString)
-		if err != nil {
-			utils.ErrorResponse(c, http.StatusUnauthorized,"invalid or expired token",err.Error())
-			c.Abort()
-			return 
-		}
+		// حط بيانات المستخدم في context
 		authUser := AuthenticatedUser{
-			UUID: claims.UserID,
+			UUID:  claims.UserID,
 			Email: claims.Email,
-			Role: claims.Role,
+			Role:  claims.Role,
 		}
-
-		c.Set("auth_user",authUser)
+		c.Set("auth_user", authUser)
 
 		c.Next()
 	}
 }
+
 func (m *AuthMiddleware) RequireRole(roles ...string)gin.HandlerFunc{
 	return func(c *gin.Context) {
 		userInterface , exists := c.Get("auth_user")
