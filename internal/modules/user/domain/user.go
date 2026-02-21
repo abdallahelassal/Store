@@ -1,19 +1,24 @@
 package domain
 
 import (
-	
+	"time"
+
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
 ) 
 
 type User struct{
-	gorm.Model
-	UUID		uuid.UUID		`json:"uuid" gorm:"default:uuid_generate_v4()"`
-	User_name	string 			`json:"username" validate:"required,min=6"`
+	
+	UUID		uuid.UUID		`json:"uuid" gorm:"type:uuid;not null;uniqueIndex"`
+	Username	string 			`json:"username" validate:"required,min=6"`
 	Email		string			`json:"email" validate:"required,email"`
-	Password	string			`json:"password" validate:"required,password"`
-	Role		Role			`json:"role" validate:"required"`
-	BranchUUID  uuid.UUID		`json:"branch_uuid"`
+	Password	string			`json:"-" validate:"required,password"`
+	Role		Role			`json:"role" validate:"required" gorm:"type:varchar(20)"`
+	BranchUUID  *uuid.UUID		`json:"branch_uuid"`
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 }
 

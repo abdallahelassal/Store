@@ -37,7 +37,7 @@ func (s *userService) Register(ctx context.Context,req request.RegisterRequest)(
 	}
 
 	user := &domain.User{
-		User_name: req.Name,
+		Username: req.Name,
 		Email: req.Email,
 		Password: hashedPassword,
 		Role: domain.Role(req.Role),
@@ -81,7 +81,7 @@ func (c *userService) GetProfile(ctx context.Context,userID uint)(*response.User
 		return nil , domain.ErrInvalidCredintials
 	}
 	return &response.UserResponse{
-		Name: user.User_name,
+		Name: user.Username,
 		Email: user.Email,
 		Role: string(user.Role),
 	},nil 
@@ -94,7 +94,7 @@ func (c *userService) UpdateProfile(ctx context.Context, uuid string , req reque
 	}
 
 	if req.Name != ""{
-		user.User_name = req.Name
+		user.Username = req.Name
 	}
 
 	if req.Email != ""{
@@ -178,7 +178,7 @@ func (s *userService) generateAuthResponse(user *domain.User)(*response.AuthResp
 }
 func (s *userService) toUserResponse(user *domain.User)*response.UserResponse{
 	return &response.UserResponse{
-		Name: user.User_name,
+		Name: user.Username,
 		Email: user.Email,
 		Role: string(user.Role),
 	}
